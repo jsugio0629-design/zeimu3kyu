@@ -7,18 +7,117 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #F7F6F2; --surface: #FFFFFF; --text: #1A1A18; --text-muted: #6B6B67;
-    --text-hint: #A0A09A; --ok: #0F6E56; --ok-bg: #E1F5EE; --ng: #993C1D;
-    --ng-bg: #FAECE7; --accent: #534AB7; --accent-bg: #EEEDFE;
-    --border: rgba(0,0,0,0.10); --border-strong: rgba(0,0,0,0.18);
-    --radius: 12px; --radius-sm: 8px;
-  }
-  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem 4rem; }
-  header { width: 100%; max-width: 540px; margin-bottom: 2rem; display: flex; align-items: baseline; gap: 12px; }
-  header h1 { font-size: 20px; font-weight: 700; }
-  header span { font-size: 13px; color: var(--text-muted); }
-  .main { width: 100%; max-width: 540px; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-  .stat { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; text-align: c
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F7F6F2;--surface:#FFF;--text:#1A1A18;--text-muted:#6B6B67;--text-hint:#A0A09A;--ok:#0F6E56;--ok-bg:#E1F5EE;--ng:#993C1D;--ng-bg:#FAECE7;--accent:#534AB7;--accent-bg:#EEEDFE;--border:rgba(0,0,0,.1);--border-strong:rgba(0,0,0,.18);--radius:12px;--radius-sm:8px}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 4rem}
+header{width:100%;max-width:540px;margin-bottom:2rem;display:flex;align-items:baseline;gap:12px}
+header h1{font-size:20px;font-weight:700}
+header span{font-size:13px;color:var(--text-muted)}
+.main{width:100%;max-width:540px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.stat{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;text-align:center}
+.stat-num{font-size:24px;font-weight:700;line-height:1.2}
+.stat-label{font-size:11px;color:var(--text-muted);margin-top:2px}
+.progress-bg{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.25rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--ok);border-radius:2px;transition:width .5s ease;width:0}
+.cat-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.cat-btn{font-family:inherit;font-size:12px;padding:4px 12px;border-radius:20px;border:.5px solid var(--border-strong);background:var(--surface);color:var(--text-muted);cursor:pointer}
+.cat-btn.active{background:var(--accent-bg);color:var(--accent);border-color:transparent;font-weight:500}
+.counter{font-size:12px;color:var(--text-hint);text-align:right;margin-bottom:6px}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--accent-bg);color:var(--accent);margin-bottom:.75rem}
+.card-box{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);min-height:190px;padding:2rem 1.5rem;display:flex;align-items:center;justify-content:center;cursor:pointer;text-align:center;margin-bottom:1rem;user-select:none}
+.card-question{font-size:18px;font-weight:500;line-height:1.65}
+.card-answer{font-size:16px;line-height:1.8}
+.card-tip{font-size:12px;color:var(--text-hint);margin-top:10px}
+.flip-btn{width:100%;font-family:inherit;font-size:14px;font-weight:500;padding:11px;border-radius:var(--radius-sm);border:.5px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer;margin-bottom:1rem}
+.answer-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.btn-ng,.btn-ok{font-family:inherit;font-size:14px;font-weight:500;padding:11px;border-radius:var(--radius-sm);cursor:pointer}
+.btn-ng{border:.5px solid var(--ng);background:var(--surface);color:var(--ng)}
+.btn-ok{border:.5px solid var(--ok);background:var(--surface);color:var(--ok)}
+.finish-box{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:2.5rem 1.5rem;text-align:center}
+.finish-icon{font-size:48px;margin-bottom:1rem}
+.finish-title{font-size:20px;font-weight:700;margin-bottom:.5rem}
+.finish-sub{font-size:14px;color:var(--text-muted);margin-bottom:1.5rem}
+.finish-btns{display:flex;flex-direction:column;gap:8px}
+</style>
+</head>
+<body>
+<header><h1>税務3級</h1><span>フラッシュカード 50問</span></header>
+<main class="main">
+<div class="stats">
+<div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">学習済み</div></div>
+<div class="stat"><div class="stat-num" style="color:var(--ok)" id="stat-ok">0</div><div class="stat-label">正解</div></div>
+<div class="stat"><div class="stat-num" style="color:var(--ng)" id="stat-ng">0</div><div class="stat-label">要復習</div></div>
+</div>
+<div class="progress-bg"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="cat-filter" id="cat-filter"></div>
+<div id="main-area"></div>
+</main>
+<script>
+const cards=[
+{cat:"所得税",q:"給与所得控除の最低額は？",a:"55万円（給与収入が162.5万円以下）",tip:"R2改正後"},
+{cat:"所得税",q:"基礎控除の額は？（所得2,400万円以下）",a:"48万円",tip:"R2改正で38→48万円"},
+{cat:"所得税",q:"医療費控除の計算式は？",a:"医療費−保険補填−（総所得×5%または10万円の低い方）",tip:"上限200万円"},
+{cat:"所得税",q:"配偶者控除の対象配偶者の所得上限は？",a:"48万円以下",tip:"本人の所得1,000万円超は対象外"},
+{cat:"所得税",q:"青色申告特別控除の最高額は？",a:"65万円（e-Tax）／55万円（帳簿のみ）",tip:""},
+{cat:"所得税",q:"確定申告必要な給与収入の目安は？",a:"2,000万円超",tip:"副業20万円超なども要件"},
+{cat:"所得税",q:"退職所得の計算式は？",a:"（退職収入−退職所得控除）×1/2",tip:"20年超：800万＋70万×（年数−20）"},
+{cat:"所得税",q:"扶養控除（一般）の控除額は？",a:"38万円",tip:"16歳以上"},
+{cat:"所得税",q:"特定扶養親族（19〜22歳）の控除額は？",a:"63万円",tip:"大学生世代"},
+{cat:"所得税",q:"雑損控除の計算式は？",a:"①損失−総所得×10% ②災害支出−5万円 の多い方",tip:""},
+{cat:"所得税",q:"ふるさと納税で使える制度は？",a:"寄附金控除／ワンストップ特例（5自治体以内）",tip:""},
+{cat:"所得税",q:"所得税の確定申告期間は？",a:"翌年2月16日〜3月15日",tip:"還付申告は1月1日から可"},
+{cat:"所得税",q:"給与所得控除の上限額は？",a:"195万円（給与850万円超）",tip:"R2改正後"},
+{cat:"所得税",q:"源泉徴収義務者とは？",a:"給与等の支払者で所得税を天引きし国に納付する者",tip:"通常翌月10日納付"},
+{cat:"所得税",q:"住宅ローン控除の控除期間は？（新築・一般）",a:"原則13年間",tip:"認定・省エネ住宅は優遇"},
+{cat:"法人税",q:"法人税（普通法人）の基本税率は？",a:"23.2%",tip:"中小は800万円以下15%"},
+{cat:"法人税",q:"交際費の取扱い（中小以外）は？",a:"全額損金不算入（飲食費の50%のみ算入可）",tip:""},
+{cat:"法人税",q:"完全子法人株式等の益金不算入割合は？",a:"100%",tip:"関連法人も100%（負債利子控除後）"},
+{cat:"法人税",q:"欠損金の繰越控除期間は？",a:"10年間",tip:"H30以降"},
+{cat:"法人税",q:"法人の法定償却方法は？",a:"定率法（建物・附属設備・構築物は定額法）",tip:""},
+{cat:"法人税",q:"中小法人の交際費の選択肢は？",a:"①年800万円定額控除 ②飲食費50% の有利な方",tip:""},
+{cat:"法人税",q:"貸倒引当金が認められる法人は？",a:"中小法人・金融機関・リース会社等",tip:"大企業は原則廃止"},
+{cat:"法人税",q:"法人税の確定申告期限は？",a:"事業年度終了の翌日から2か月以内",tip:""},
+{cat:"法人税",q:"中間申告が必要なケースは？",a:"前期法人税額が20万円超",tip:""},
+{cat:"法人税",q:"同族会社の判定基準は？",a:"上位3株主グループで発行済株式の50%超を保有",tip:""},
+{cat:"消費税",q:"消費税の免税事業者の判定基準は？",a:"基準期間の課税売上高1,000万円以下",tip:"特定期間も要注意"},
+{cat:"消費税",q:"消費税の標準・軽減税率は？",a:"標準10%（国7.8+地方2.2）／軽減8%（飲食料品・新聞）",tip:""},
+{cat:"消費税",q:"非課税取引の例を3つ",a:"①土地の譲渡・貸付 ②住宅貸付 ③社会保険医療",tip:"「非課税」と「不課税」を区別"},
+{cat:"消費税",q:"インボイス制度の開始時期は？",a:"2023年（令和5年）10月1日",tip:""},
+{cat:"消費税",q:"簡易課税を選択できる事業者は？",a:"基準期間の課税売上5,000万円以下",tip:"事前届出必要"},
+{cat:"消費税",q:"簡易課税のみなし仕入率（小売業）は？",a:"80%（第2種）",tip:"卸売業は90%（第1種）"},
+{cat:"消費税",q:"課税対象の4要件は？",a:"①国内 ②事業者が事業として ③対価を得て ④資産譲渡・貸付・役務提供",tip:""},
+{cat:"消費税",q:"輸出取引の取扱いは？",a:"免税（0%課税）／仕入税額控除は可",tip:""},
+{cat:"消費税",q:"消費税の確定申告期限（個人）は？",a:"翌年3月31日まで",tip:"法人は2か月以内"},
+{cat:"消費税",q:"適格請求書発行事業者の手続きは？",a:"税務署に登録申請書を提出し登録番号を得る",tip:"課税事業者が前提"},
+{cat:"相続税・贈与税",q:"相続税の基礎控除の計算式は？",a:"3,000万円＋600万円×法定相続人数",tip:""},
+{cat:"相続税・贈与税",q:"配偶者・子2人の基礎控除額は？",a:"4,800万円",tip:"3,000+600×3"},
+{cat:"相続税・贈与税",q:"暦年課税の贈与税基礎控除は？",a:"年110万円",tip:"受贈者1人あたり"},
+{cat:"相続税・贈与税",q:"相続時精算課税の特別控除額は？",a:"累計2,500万円",tip:"贈与者60歳以上、受贈者18歳以上"},
+{cat:"相続税・贈与税",q:"配偶者の税額軽減で非課税になる額は？",a:"①1.6億円 ②法定相続分 の多い方まで",tip:""},
+{cat:"相続税・贈与税",q:"相続税の申告期限は？",a:"相続開始を知った日の翌日から10か月以内",tip:""},
+{cat:"相続税・贈与税",q:"小規模宅地特例（特定居住用）は？",a:"減額80%・限度330㎡",tip:""},
+{cat:"相続税・贈与税",q:"教育資金一括贈与の非課税限度は？",a:"1,500万円（学校以外は500万円）",tip:"30歳まで"},
+{cat:"加算税・調査",q:"過少申告加算税の割合は？",a:"10%（期限内税額超の部分は15%）",tip:""},
+{cat:"加算税・調査",q:"無申告加算税の割合は？",a:"15%（自主申告は5%、50万円超は20%）",tip:""},
+{cat:"加算税・調査",q:"重加算税（過少申告）の割合は？",a:"35%",tip:"無申告は40%"},
+{cat:"加算税・調査",q:"延滞税の計算終期は？",a:"完納の日",tip:"2か月以内と超で税率異なる"},
+{cat:"加算税・調査",q:"更正の請求ができる期間は？",a:"法定申告期限から5年以内",tip:""},
+{cat:"加算税・調査",q:"国税の更正・決定の除斥期間は？",a:"原則5年（脱税は7年）",tip:""},
+{cat:"加算税・調査",q:"税務調査の事前通知が省略される場合は？",a:"違法・不当行為を容易にするおそれがある場合等",tip:"国税通則法"},
+];
+let filtered=[...cards],current=0,flipped=false,okCount=0,ngCount=0,doneCount=0,ngIndices=[],selectedCat="すべて";
+const categories=["すべて",...new Set(cards.map(c=>c.cat))];
+function renderCatFilter(){document.getElementById("cat-filter").innerHTML=categories.map(cat=>`<button class="cat-btn ${cat===selectedCat?'active':''}" onclick="selectCat('${cat}')">${cat}</button>`).join("");}
+function selectCat(cat){selectedCat=cat;filtered=cat==="すべて"?[...cards]:cards.filter(c=>c.cat===cat);current=0;flipped=false;okCount=0;ngCount=0;doneCount=0;ngIndices=[];renderCatFilter();updateStats();renderCard();}
+function updateStats(){document.getElementById("stat-total").textContent=doneCount;document.getElementById("stat-ok").textContent=okCount;document.getElementById("stat-ng").textContent=ngCount;document.getElementById("progress-fill").style.width=(filtered.length>0?Math.round(doneCount/filtered.length*100):0)+"%";}
+function renderCard(){const area=document.getElementById("main-area");if(current>=filtered.length){const rate=filtered.length>0?Math.round(okCount/filtered.length*100):0;area.innerHTML=`<div class="finish-box"><div class="finish-icon">✓</div><div class="finish-title">完了！</div><div class="finish-sub">正解率：${rate}%（${okCount} / ${filtered.length}）</div><div class="finish-btns"><button class="flip-btn" onclick="restart()">もう一度やり直す</button>${ngCount>0?`<button class="flip-btn" onclick="restartNG()">要復習のみ（${ngCount}問）</button>`:''}</div></div>`;return;}
+const card=filtered[current];area.innerHTML=`<div class="counter">${current+1} / ${filtered.length}</div><div class="badge">${card.cat}</div><div class="card-box" onclick="doFlip()">${flipped?`<div><div class="card-answer">${card.a}</div>${card.tip?`<div class="card-tip">${card.tip}</div>`:''}</div>`:`<div class="card-question">${card.q}</div>`}</div>${!flipped?`<button class="flip-btn" onclick="doFlip()">答えを見る</button>`:`<div class="answer-btns"><button class="btn-ng" onclick="answer(false)">✗ 要復習</button><button class="btn-ok" onclick="answer(true)">✓ 覚えた</button></div>`}`;}
+function doFlip(){flipped=true;renderCard();}
+function answer(ok){if(!ok)ngIndices.push(current);if(ok)okCount++;else ngCount++;doneCount++;current++;flipped=false;updateStats();renderCard();}
+function restart(){current=0;flipped=false;okCount=0;ngCount=0;doneCount=0;ngIndices=[];updateStats();renderCard();}
+function restartNG(){filtered=ngIndices.map(i=>filtered[i]);current=0;flipped=false;okCount=0;ngCount=0;doneCount=0;ngIndices=[];updateStats();renderCard();}
+renderCatFilter();updateStats();renderCard();
+</script>
+</body>
+</html>
